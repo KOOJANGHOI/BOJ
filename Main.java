@@ -1,11 +1,13 @@
-class Main {
+import java.util.Scanner;
 
-	
-	void solve() {
-		
+public class Main {
+
+	void work() {
+		Scanner scan = new Scanner(System.in);
+		scan.close();
 	}
- 
-    public static void main(String a[]){
-        new Main().solve();
-    }
+
+	public static void main(String... args) {
+		new Main().work();
+	}
 }

@@ -1,97 +1,78 @@
-
-
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Scanner;
 
-public class Q7576 {
-	private static int M, N, rear, front;
-	private static int[][] arr, distance;
-	private static int[] queuex, queuey;
-	private static Scanner scan;
+class Q7576 {
+	int N, M, idx = 0;
+	int[][] map, visited, distance;
+	Queue<Node> queue;
+	int[] dx = { -1, 1, 0, 0 };
+	int[] dy = { 0, 0, -1, 1 };
 
-	public static void init() {
-		rear = front = 0;
-		queuex = new int[1000000];
-		queuey = new int[1000000];
-		distance = new int[N + 1][M + 1];
-	}
-
-	public static void push(int x, int y) {
-		rear++;
-		queuex[rear] = x;
-		queuey[rear] = y;
-	}
-
-	public static int popx() {
-		front++;
-		return queuex[front];
-	}
-
-	public static int popy() {
-		return queuey[front];
-	}
-
-	public static void BFS2(int fx, int fy, int sx, int sy) {
-		if (distance[sx][sy] == -1 && arr[sx][sy] == 0) {
-			distance[sx][sy] = distance[fx][fy] + 1;
-			push(sx, sy);
-		}
-	}
-
-	public static void BFS() {
-		while (rear != front) {
-			int tx = popx();
-			int ty = popy();
-			if (tx > 1)
-				BFS2(tx, ty, tx - 1, ty);
-			if (tx < N)
-				BFS2(tx, ty, tx + 1, ty);
-			if (ty > 1)
-				BFS2(tx, ty, tx, ty - 1);
-			if (ty < M)
-				BFS2(tx, ty, tx, ty + 1);
-		}
-	}
-
-	public static void main(String[] args) {
-		scan = new Scanner(System.in);
+	void work() {
+		Scanner scan = new Scanner(System.in);
 		M = scan.nextInt();
 		N = scan.nextInt();
-		arr = new int[N + 1][M + 1];
-		init();
-		for (int i = 1; i <= N; i++) {
-			for (int j = 1; j <= M; j++) {
-				arr[i][j] = scan.nextInt();
+		map = new int[N][M];
+		visited = new int[N][M];
+		distance = new int[N][M];
+		queue = new LinkedList<Node>();
+		int temp = 1;
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < M; j++) {
+				map[i][j] = scan.nextInt();
+				temp *= map[i][j];
 				distance[i][j] = -1;
-				if (arr[i][j] == 1) {
+				if (map[i][j] == 1) {
 					distance[i][j] = 0;
-					push(i, j);
+					queue.add(new Node(i, j));
 				}
 			}
 		}
-		int temp = 1;
-		for (int i = 1; i <= N; i++) {
-			for (int j = 1; j <= M; j++) {
-				temp *= arr[i][j];
-			}
-		}
+		scan.close();
 		if (temp == 1) {
 			System.out.println(0);
 		} else {
-			BFS();
+			while (!queue.isEmpty()) {
+				Node node = queue.poll();
+				visited[node.i][node.j] = 1;
+				for (int i = 0; i < 4; i++) {
+					int ii = node.i + dx[i];
+					int jj = node.j + dy[i];
+					if (ii >= 0 && ii < N && jj >= 0 && jj < M) {
+						if (visited[ii][jj] == 0 && map[ii][jj] == 0) {
+							visited[ii][jj] = 1;
+							map[ii][jj] = 1;
+							distance[ii][jj] = distance[node.i][node.j] + 1;
+							queue.add(new Node(ii, jj));
+						}
+					}
+				}
+			}
+			boolean chk = false;
 			int max = 0;
-			for (int i = 1; i <= N; i++) {
-				for (int j = 1; j <= M; j++) {
-					if (max < distance[i][j])
-						max = distance[i][j];
+			for (int i = 0; i < N; i++) {
+				for (int j = 0; j < M; j++) {
+					if (map[i][j] == 0) {
+						chk = true;
+					}
+					max = Math.max(max, distance[i][j]);
 				}
 			}
-			for (int i = 1; i <= N; i++) {
-				for (int j = 1; j <= M; j++) {
-					if (arr[i][j] == 0 && distance[i][j] == -1)
-						max = -1;
-				}
-			}
-			System.out.println(max);
+			System.out.println((chk) ? -1 : max);
+		}
+	}
+
+	public static void main(String a[]) {
+		new Q7576().work();
+	}
+
+	public class Node {
+		int i, j;
+
+		public Node(int _i, int _j) {
+			this.i = _i;
+			this.j = _j;
 		}
 	}
 }
